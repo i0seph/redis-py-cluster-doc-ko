@@ -7,6 +7,8 @@ redis cluster text base user interface 만들기 설계
   * 슬롯 통계
 
 ## 슬롯 이동
+1. 슬롯번호로 해당 노드 찾고, 접속
+1. 옮겨 갈 대상 노드로 접속
 1. 대상 노드에서 cluster setslot #slotnum importing 해당슬롯노드
 1. 원래 노드에서 cluster setslot #slotnum migrating 대상노드
 1. 원래 노드에서 cluster countkeysinslot 값이 0보다 크면
