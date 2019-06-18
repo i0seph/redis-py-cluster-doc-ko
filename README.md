@@ -22,5 +22,30 @@ redis cluster text base user interface 만들기 설계
 
 ## 노드 삭제 forget
 
+## docker를 이용한 redis cluster 구축
 
-    
+윗 작업이 다 의미 없어졌다.
+
+```
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install docker-ce
+docker network create redis-net
+systemctl stop docker
+systemctl start docker
+docker network inspect redis-net
+mkdir /docker/redis && cd /docker/redis
+mkdir redis1 redis2 redis3
+cat > /docker/redis/default.conf
+cluster-enabled yes
+cluster-config-file nodes.conf
+^D
+cp /docker/redis/default.conf redis1
+cp /docker/redis/default.conf redis2
+cp /docker/redis/default.conf redis3
+docker run --network=redis-net --ip=172.19.0.11 -it --name=redis1 -p 6379:6379 --sysctl net.core.somaxconn=1024 -v /docker/redis/redis1:/data redis redis-server /data/redis.conf &
+docker run --network=redis-net --ip=172.19.0.12 -it --name=redis1 -p 6380:6379 --sysctl net.core.somaxconn=1024 -v /docker/redis/redis1:/data redis redis-server /data/redis.conf &
+docker run --network=redis-net --ip=172.19.0.13 -it --name=redis1 -p 6381:6379 --sysctl net.core.somaxconn=1024 -v /docker/redis/redis1:/data redis redis-server /data/redis.conf &
+docker exec -it redis1 redis-cli --cluster create 172.19.0.11:6379 172.19.0.12:6379 172.19.0.13:6379
+docker exec -it redis1 redis-cli cluster info
+docker exec -it redis1 redis-cli cluster nodes
+```
